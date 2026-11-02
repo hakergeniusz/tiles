@@ -1,0 +1,14 @@
+[package]
+name = "gtk2048"
+version = "0.2.0"
+edition = "2021"
+license = "MIT"
+description = "The classic 2048 puzzle, built with GTK4 and libadwaita"
+
+[dependencies]
+adw = { package = "libadwaita", version = "0.9", features = ["v1_4"] }
+gtk = { package = "gtk4", version = "0.11", features = ["v4_12"] }
+rand = "0.9"
+
+[profile.release]
+strip = true
