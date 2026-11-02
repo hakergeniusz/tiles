@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="board" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ccc0b1"/>
+      <stop offset="1" stop-color="#b0a294"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f3cd52"/>
+      <stop offset="1" stop-color="#e9bf27"/>
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="28" fill="url(#board)"/>
+  <g font-family="DejaVu Sans, sans-serif" font-weight="bold" text-anchor="middle">
+    <rect x="15" y="15" width="46" height="46" rx="10" fill="#eee4da"/>
+    <text x="38" y="49" font-size="28" fill="#776e65">2</text>
+    <rect x="67" y="15" width="46" height="46" rx="10" fill="#f2b179"/>
+    <text x="90" y="49" font-size="28" fill="#f9f6f2">8</text>
+    <rect x="15" y="67" width="46" height="46" rx="10" fill="#f65e3b"/>
+    <text x="38" y="101" font-size="26" fill="#f9f6f2">64</text>
+    <rect x="67" y="67" width="46" height="46" rx="10" fill="url(#gold)"/>
+    <text x="90" y="98" font-size="17" fill="#f9f6f2">2048</text>
+  </g>
+</svg>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.hakergeniusz.Tiles</id>
+  <metadata_license>MIT</metadata_license>
+  <project_license>MIT</project_license>
+  <name>Tiles</name>
+  <summary>The classic 2048 puzzle for Linux desktops</summary>
+  <description>
+    <p>Tiles is the classic 2048 puzzle as a native Linux desktop app, built
+    with Rust, GTK4 and libadwaita. Slide tiles with the keyboard, mouse or
+    touch to merge equal numbers and reach the 2048 tile.</p>
+    <p>It ships animated slides and merge pops, Light, Sepia and Dark color
+    modes, a GNOME-style About window, on-screen controls and a persisted
+    best score.</p>
+  </description>
+  <launchable type="desktop-id">io.github.hakergeniusz.Tiles.desktop</launchable>
+  <url type="homepage">https://github.com/hakergeniusz/tiles</url>
+  <url type="bugtracker">https://github.com/hakergeniusz/tiles/issues</url>
+  <developer_name>hakergeniusz</developer_name>
+  <releases>
+    <release version="0.4.0" date="2026-11-02">
+      <description>
+        <p>First release under the Tiles name: new branding and app icon,
+        Debian, Fedora, Arch and Flatpak packaging.</p>
+      </description>
+    </release>
+  </releases>
+  <content_rating type="oars-1.1"/>
+  <provides>
+    <binary>tiles</binary>
+  </provides>
+</component>

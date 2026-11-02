@@ -16,3 +16,10 @@ build/
 *.log
 *.tmp
 *.cache
+
+# Packaging artifacts
+*.deb
+*.rpm
+*.tar.zst
+packaging/arch/src/
+packaging/arch/pkg/

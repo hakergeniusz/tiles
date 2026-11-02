@@ -1,4 +1,4 @@
-//! GTK2048 — the classic 2048 puzzle, built with GTK4 and libadwaita.
+//! Tiles — the classic 2048 puzzle, built with GTK4 and libadwaita.
 
 mod board_widget;
 mod game;
@@ -11,14 +11,15 @@ use std::time::Duration;
 
 use adw::prelude::*;
 use gtk::gdk;
+use gtk::gio;
 use gtk::glib;
-use gtk::{AboutDialog, Align, Button, DropDown, Label, Orientation, Overlay};
+use gtk::{Align, Button, Label, Orientation, Overlay};
 
 use board_widget::BoardWidget;
 use game::{Direction, Game, SIZE};
 use theme::PALETTES;
 
-const APP_ID: &str = "io.github.hakergeniusz.Gtk2048";
+const APP_ID: &str = "io.github.hakergeniusz.Tiles";
 
 /// How often (ms) to re-check for the win / game-over overlay while the
 /// move animation is still running.
@@ -28,10 +29,19 @@ const OVERLAY_POLL_MS: u64 = 100;
 const DEFAULT_THEME: usize = 1;
 
 fn main() -> glib::ExitCode {
+    register_resources();
     let app = adw::Application::builder().application_id(APP_ID).build();
 
     app.connect_activate(build_ui);
     app.run()
+}
+
+/// Register the bundled icons (app logo for About and the taskbar).
+fn register_resources() {
+    let bytes: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/tiles.gresource"));
+    let resource =
+        gio::Resource::from_data(&glib::Bytes::from(bytes)).expect("bundled GResource is valid");
+    gio::resources_register(&resource);
 }
 
 /// The widgets the game state needs to reach.
@@ -144,36 +154,40 @@ fn build_ui(app: &adw::Application) {
     let palette = PALETTES[theme_index];
     let css_provider = gtk::CssProvider::new();
     css_provider.load_from_string(&theme::css(palette));
+    let display = gdk::Display::default().expect("GDK display should be available");
     gtk::style_context_add_provider_for_display(
-        &gdk::Display::default().expect("GDK display should be available"),
+        &display,
         &css_provider,
         gtk::STYLE_PROVIDER_PRIORITY_APPLICATION,
     );
+    gtk::IconTheme::for_display(&display).add_resource_path("/tiles/icons");
     adw::StyleManager::default().set_color_scheme(palette.scheme);
 
-    // Header bar: mode switch on the left, About on the right.
+    // Header bar: app menu (color modes + about) on the right, like GNOME
+    // core apps.
     let header = adw::HeaderBar::new();
-    let theme_dropdown = DropDown::new(
-        Some(gtk::StringList::new(&[
-            PALETTES[0].label,
-            PALETTES[1].label,
-            PALETTES[2].label,
-        ])),
-        None::<&gtk::Expression>,
-    );
-    theme_dropdown.set_selected(theme_index as u32);
-    theme_dropdown.set_tooltip_text(Some("Color mode"));
-    theme_dropdown.set_can_focus(false);
-    header.pack_start(&theme_dropdown);
-
-    let about_btn = Button::with_label("About");
-    about_btn.add_css_class("flat");
-    about_btn.set_can_focus(false);
-    header.pack_end(&about_btn);
+    let menu = gio::Menu::new();
+    let theme_section = gio::Menu::new();
+    for palette in PALETTES {
+        theme_section.append(
+            Some(palette.label),
+            Some(&format!("win.theme::{}", palette.name)),
+        );
+    }
+    menu.append_section(Some("Color Mode"), &theme_section);
+    let about_section = gio::Menu::new();
+    about_section.append(Some("About Tiles"), Some("win.about"));
+    menu.append_section(None, &about_section);
+    let menu_btn = gtk::MenuButton::builder()
+        .icon_name("open-menu-symbolic")
+        .menu_model(&menu)
+        .tooltip_text("Main menu")
+        .build();
+    header.pack_end(&menu_btn);
 
     // Title block on the left, score pills on the right — like play2048.co.
     let title_box = gtk::Box::new(Orientation::Vertical, 2);
-    let title = Label::new(Some("2048"));
+    let title = Label::new(Some("Tiles"));
     title.add_css_class("game-title");
     title.set_halign(Align::Start);
     title.set_xalign(0.0);
@@ -275,11 +289,12 @@ fn build_ui(app: &adw::Application) {
 
     let window = adw::ApplicationWindow::builder()
         .application(app)
-        .title("2048")
+        .title("Tiles")
         .default_width(500)
         .default_height(700)
         .content(&content)
         .build();
+    window.set_icon_name(Some("io.github.hakergeniusz.Tiles"));
 
     let game = Game::new();
     let spawns = nonzero_cells(&game);
@@ -314,11 +329,6 @@ fn build_ui(app: &adw::Application) {
         btn.connect_clicked(move |_| state.clone().do_move(dir));
     }
 
-    theme_dropdown.connect_selected_notify({
-        let state = state.clone();
-        move |dropdown| state.apply_theme(dropdown.selected() as usize)
-    });
-
     let controller = gtk::EventControllerKey::new();
     controller.connect_key_pressed({
         let state = state.clone();
@@ -342,18 +352,71 @@ fn build_ui(app: &adw::Application) {
     });
     window.add_controller(controller);
 
-    // About dialog.
-    let about = AboutDialog::new();
-    about.set_program_name(Some("GTK2048"));
-    about.set_version(Some(env!("CARGO_PKG_VERSION")));
-    about.set_comments(Some(
-        "The classic 2048 puzzle, written in Rust with GTK4 and libadwaita.",
-    ));
-    about.set_license_type(gtk::License::MitX11);
-    about.set_authors(&["hakergeniusz"]);
-    about.set_transient_for(Some(&window));
-    about.set_modal(true);
-    about_btn.connect_clicked(move |_| about.present());
+    // Mouse and touch swipes on the board: direction comes from the
+    // dominant drag axis once the drag passes a short threshold.
+    let swipe = gtk::GestureDrag::new();
+    swipe.set_touch_only(false);
+    swipe.set_button(0); // any mouse button
+    swipe.connect_drag_end({
+        let state = state.clone();
+        move |_, dx, dy| {
+            if (dx * dx + dy * dy).sqrt() < 24.0 {
+                return;
+            }
+            let dir = if dx.abs() > dy.abs() {
+                if dx > 0.0 {
+                    Direction::Right
+                } else {
+                    Direction::Left
+                }
+            } else if dy > 0.0 {
+                Direction::Down
+            } else {
+                Direction::Up
+            };
+            state.clone().do_move(dir);
+        }
+    });
+    state.board.add_controller(swipe);
+
+    // App menu actions: color modes and the About window.
+    let theme_action = gio::SimpleAction::new_stateful(
+        "theme",
+        Some(glib::VariantTy::STRING),
+        &PALETTES[theme_index].name.to_variant(),
+    );
+    {
+        let state = state.clone();
+        theme_action.connect_activate(move |action, param| {
+            let name = param.and_then(|value| value.str()).unwrap_or("sepia");
+            action.set_state(&name.to_variant());
+            let index = PALETTES
+                .iter()
+                .position(|palette| palette.name == name)
+                .unwrap_or(DEFAULT_THEME);
+            state.apply_theme(index);
+        });
+    }
+    window.add_action(&theme_action);
+
+    // About window, laid out like GNOME core apps: logo, name, developer,
+    // version badge, website / issue links, credits and legal pages.
+    let about = adw::AboutWindow::builder()
+        .application_name("Tiles")
+        .application_icon("io.github.hakergeniusz.Tiles")
+        .version(env!("CARGO_PKG_VERSION"))
+        .developer_name("hakergeniusz")
+        .website("https://github.com/hakergeniusz/tiles")
+        .issue_url("https://github.com/hakergeniusz/tiles/issues")
+        .copyright("© 2026 hakergeniusz")
+        .license_type(gtk::License::MitX11)
+        .transient_for(&window)
+        .modal(true)
+        .build();
+    about.set_developers(&["hakergeniusz"]);
+    let about_action = gio::SimpleAction::new("about", None);
+    about_action.connect_activate(move |_, _| about.present());
+    window.add_action(&about_action);
 
     window.present();
 }
@@ -390,7 +453,7 @@ fn data_dir() -> Option<PathBuf> {
         Some(dir) if !dir.is_empty() => PathBuf::from(dir),
         _ => PathBuf::from(std::env::var_os("HOME")?).join(".local/share"),
     };
-    Some(base.join("gtk2048"))
+    Some(base.join("tiles"))
 }
 
 fn file_path(name: &str) -> Option<PathBuf> {

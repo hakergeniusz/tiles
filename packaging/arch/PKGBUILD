@@ -1,0 +1,29 @@
+# Maintainer: hakergeniusz <hakergeniusz@users.noreply.github.com>
+pkgname=tiles
+pkgver=0.4.0
+pkgrel=1
+pkgdesc="The classic 2048 puzzle, built with GTK4 and libadwaita"
+arch=(x86_64)
+url="https://github.com/hakergeniusz/tiles"
+license=(MIT)
+depends=(gtk4 libadwaita)
+makedepends=(cargo git)
+source=("$pkgname::git+https://github.com/hakergeniusz/tiles.git#tag=v$pkgver")
+sha256sums=(SKIP)
+
+build() {
+  cd "$pkgname"
+  cargo build --release --frozen
+}
+
+package() {
+  cd "$pkgname"
+  install -Dm755 target/release/tiles -t "$pkgdir/usr/bin/"
+  install -Dm644 packaging/io.github.hakergeniusz.Tiles.desktop \
+          "$pkgdir/usr/share/applications/"
+  install -Dm644 resources/tiles.svg \
+          "$pkgdir/usr/share/icons/hicolor/scalable/apps/io.github.hakergeniusz.Tiles.svg"
+  install -Dm644 packaging/io.github.hakergeniusz.Tiles.metainfo.xml \
+          "$pkgdir/usr/share/metainfo/"
+  install -Dm644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname/"
+}

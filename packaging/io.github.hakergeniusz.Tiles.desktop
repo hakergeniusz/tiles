@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Tiles
+GenericName=2048 Puzzle
+Comment=Join the numbers and get to the 2048 tile
+Exec=tiles
+Icon=io.github.hakergeniusz.Tiles
+Terminal=false
+Categories=GNOME;GTK;Game;LogicGame;
+Keywords=2048;puzzle;tiles;numbers;
+StartupNotify=true
+StartupWMClass=io.github.hakergeniusz.Tiles

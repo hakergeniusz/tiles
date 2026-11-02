@@ -1,0 +1,23 @@
+app-id: io.github.hakergeniusz.Tiles
+runtime: org.gnome.Platform
+runtime-version: "48"
+sdk: org.gnome.Sdk
+command: tiles
+finish-args:
+  - --share=ipc
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --device=dri
+modules:
+  - name: tiles
+    buildsystem: simple
+    build-commands:
+      - cargo build --release --offline
+      - install -Dm755 target/release/tiles -t /app/bin/
+      - install -Dm644 packaging/io.github.hakergeniusz.Tiles.desktop -t /app/share/applications/
+      - install -Dm644 resources/tiles.svg /app/share/icons/hicolor/scalable/apps/io.github.hakergeniusz.Tiles.svg
+      - install -Dm644 packaging/io.github.hakergeniusz.Tiles.metainfo.xml -t /app/share/metainfo/
+    sources:
+      - type: dir
+        path: ../..
+      - generated-sources.json

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/tiles/icons">
+    <file alias="hicolor/scalable/apps/io.github.hakergeniusz.Tiles.svg" preprocess="xml-stripblanks">tiles.svg</file>
+  </gresource>
+</gresources>
