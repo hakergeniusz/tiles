@@ -24,14 +24,14 @@ mouse/touch swipes and a persisted best score.
 cargo build --release
 
 %install
-install -Dm755 target/release/tiles -t %{buildroot}%{_bindir}/
-install -Dm644 packaging/io.github.hakergeniusz.Tiles.desktop -t \
-        %{buildroot}%{_datadir}/applications/
+install -Dm755 target/release/tiles %{buildroot}%{_bindir}/tiles
+install -Dm644 packaging/io.github.hakergeniusz.Tiles.desktop \
+        %{buildroot}%{_datadir}/applications/io.github.hakergeniusz.Tiles.desktop
 install -Dm644 resources/tiles.svg \
         %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/io.github.hakergeniusz.Tiles.svg
-install -Dm644 packaging/io.github.hakergeniusz.Tiles.metainfo.xml -t \
-        %{buildroot}%{_metainfodir}/
-install -Dm644 LICENSE -t %{buildroot}%{_licensedir}/%{name}/
+install -Dm644 packaging/io.github.hakergeniusz.Tiles.metainfo.xml \
+        %{buildroot}%{_metainfodir}/io.github.hakergeniusz.Tiles.metainfo.xml
+install -Dm644 LICENSE %{buildroot}%{_licensedir}/%{name}/LICENSE
 
 %files
 %{_bindir}/tiles

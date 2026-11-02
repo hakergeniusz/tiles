@@ -8,7 +8,9 @@ url="https://github.com/hakergeniusz/tiles"
 license=(MIT)
 depends=(gtk4 libadwaita)
 makedepends=(cargo git)
-source=("$pkgname::git+https://github.com/hakergeniusz/tiles.git#tag=v$pkgver")
+# Private repo: clone over SSH. If the repo ever becomes public, switch to
+# git+https://github.com/hakergeniusz/tiles.git
+source=("$pkgname::git+ssh://git@github.com/hakergeniusz/tiles.git#tag=v$pkgver")
 sha256sums=(SKIP)
 
 build() {
@@ -18,12 +20,12 @@ build() {
 
 package() {
   cd "$pkgname"
-  install -Dm755 target/release/tiles -t "$pkgdir/usr/bin/"
+  install -Dm755 target/release/tiles "$pkgdir/usr/bin/tiles"
   install -Dm644 packaging/io.github.hakergeniusz.Tiles.desktop \
-          "$pkgdir/usr/share/applications/"
+          "$pkgdir/usr/share/applications/io.github.hakergeniusz.Tiles.desktop"
   install -Dm644 resources/tiles.svg \
           "$pkgdir/usr/share/icons/hicolor/scalable/apps/io.github.hakergeniusz.Tiles.svg"
   install -Dm644 packaging/io.github.hakergeniusz.Tiles.metainfo.xml \
-          "$pkgdir/usr/share/metainfo/"
-  install -Dm644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname/"
+          "$pkgdir/usr/share/metainfo/io.github.hakergeniusz.Tiles.metainfo.xml"
+  install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 }
