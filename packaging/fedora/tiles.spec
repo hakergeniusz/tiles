@@ -1,14 +1,15 @@
 Name:           tiles
-Version:        0.4.0
-Release:        1%{?dist}
+Version:        51.0.0
+Release:        0.1.beta.1%{?dist}
 Summary:        The classic 2048 puzzle, built with GTK4 and libadwaita
 
 License:        MIT
 URL:            https://github.com/hakergeniusz/tiles
-Source0:        %{url}/archive/refs/tags/v%{version}/%{name}-%{version}.tar.gz
+Source0:        %{url}/archive/refs/tags/v51.0.0-beta.1/%{name}-%{version}.tar.gz
 
 BuildRequires:  cargo
 BuildRequires:  gcc
+BuildRequires:  glib2-devel
 Requires:       gtk4
 Requires:       libadwaita
 
@@ -41,5 +42,8 @@ install -Dm644 LICENSE %{buildroot}%{_licensedir}/%{name}/LICENSE
 %license LICENSE
 
 %changelog
+* Tue Nov 03 2026 hakergeniusz <hakergeniusz@users.noreply.github.com> - 51.0.0-0.1.beta.1
+- First beta of the 51 series (pre-release of 51.0.0)
+
 * Mon Nov 02 2026 hakergeniusz <hakergeniusz@users.noreply.github.com> - 0.4.0-1
 - First Tiles release: rename, app icon, deb/rpm/arch/flatpak packaging

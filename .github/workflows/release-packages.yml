@@ -1,0 +1,61 @@
+name: release-packages
+
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  fedora-rpm:
+    name: Fedora RPM
+    runs-on: ubuntu-latest
+    container: fedora:latest
+    steps:
+      - name: Install build toolchain
+        run: >
+          dnf install -y --setopt=install_weak_deps=False
+          cargo gcc git rpm-build glib2-devel gtk4-devel libadwaita-devel
+
+      - name: Check out the tag
+        uses: actions/checkout@v4
+
+      - name: Build source tarball
+        run: |
+          git config --global --add safe.directory "$PWD"
+          VERSION=$(sed -n 's/^version = "\([^"]*\)"/\1/p' Cargo.toml | head -n1 | sed 's/-.*//')
+          echo "Building tiles-${VERSION}.tar.gz from $(git describe --tags)"
+          git archive --prefix="tiles-${VERSION}/" -o "tiles-${VERSION}.tar.gz" HEAD
+          echo "RPM_VERSION=${VERSION}" >> "$GITHUB_ENV"
+
+      - name: Build RPM
+        run: >
+          rpmbuild -bb --define "_topdir $HOME/rpmbuild" --define "_sourcedir $PWD"
+          packaging/fedora/tiles.spec
+
+      - name: Upload RPM artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tiles-rpm
+          path: |
+            ~/rpmbuild/RPMS/x86_64/tiles-*.rpm
+          if-no-files-found: error
+
+  flatpak:
+    name: Flatpak bundle
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the tag
+        uses: actions/checkout@v4
+
+      - name: Build Flatpak
+        uses: flatpak/flatpak-github-actions/flatpak-builder@v6
+        with:
+          bundle: tiles.flatpak
+          manifest-path: packaging/flatpak/io.github.hakergeniusz.Tiles.yml
+          cache-key: flatpak-${{ github.sha }}
+
+      - name: Upload Flatpak artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tiles-flatpak
+          path: tiles.flatpak
+          if-no-files-found: error

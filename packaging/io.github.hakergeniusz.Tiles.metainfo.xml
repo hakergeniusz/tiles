@@ -18,6 +18,12 @@
   <url type="bugtracker">https://github.com/hakergeniusz/tiles/issues</url>
   <developer_name>hakergeniusz</developer_name>
   <releases>
+    <release version="51.0.0-beta.1" date="2026-11-03" type="development">
+      <description>
+        <p>First beta of the 51 series, built and released from CI:
+        Fedora RPM and Flatpak bundle attached to the GitHub release.</p>
+      </description>
+    </release>
     <release version="0.4.0" date="2026-11-02">
       <description>
         <p>First release under the Tiles name: new branding and app icon,

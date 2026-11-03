@@ -1,16 +1,16 @@
 # Maintainer: hakergeniusz <hakergeniusz@users.noreply.github.com>
 pkgname=tiles
-pkgver=0.4.0
-pkgrel=1
+pkgver=51.0.0
+pkgrel=0.1
 pkgdesc="The classic 2048 puzzle, built with GTK4 and libadwaita"
 arch=(x86_64)
 url="https://github.com/hakergeniusz/tiles"
 license=(MIT)
 depends=(gtk4 libadwaita)
 makedepends=(cargo git)
-# Private repo: clone over SSH. If the repo ever becomes public, switch to
-# git+https://github.com/hakergeniusz/tiles.git
-source=("$pkgname::git+ssh://git@github.com/hakergeniusz/tiles.git#tag=v$pkgver")
+# 51.0.0-beta.1 pre-release, built from its tag. Private repo: clone over
+# SSH. If the repo ever becomes public, switch to git+https://
+source=("$pkgname::git+ssh://git@github.com/hakergeniusz/tiles.git#tag=v51.0.0-beta.1")
 sha256sums=(SKIP)
 
 build() {
