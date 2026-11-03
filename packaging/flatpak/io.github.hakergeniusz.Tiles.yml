@@ -3,7 +3,9 @@ runtime: org.gnome.Platform
 runtime-version: "48"
 sdk: org.gnome.Sdk
 sdk-extensions:
-  - org.freedesktop.Sdk.Extension.rust-stable//24.08
+  # No explicit branch: flatpak resolves it from the SDK metadata
+  # (org.freedesktop.Sdk.Extension point, version=24.08 for GNOME 48).
+  - org.freedesktop.Sdk.Extension.rust-stable
 command: tiles
 finish-args:
   - --share=ipc
