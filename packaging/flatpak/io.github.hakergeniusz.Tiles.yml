@@ -2,12 +2,17 @@ app-id: io.github.hakergeniusz.Tiles
 runtime: org.gnome.Platform
 runtime-version: "48"
 sdk: org.gnome.Sdk
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.rust-stable//24.08
 command: tiles
 finish-args:
   - --share=ipc
   - --socket=wayland
   - --socket=fallback-x11
   - --device=dri
+build-options:
+  append-path: /usr/lib/sdk/rust-stable/bin
+  prepend-ld-library-path: /usr/lib/sdk/rust-stable/lib
 modules:
   - name: tiles
     buildsystem: simple
