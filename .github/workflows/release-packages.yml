@@ -51,6 +51,11 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y flatpak flatpak-builder
           sudo flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+          # Pre-install the runtime and SDK with sudo: the action installs
+          # deps into the system installation without root, which polkit
+          # denies on CI runners ("Deploy not allowed for user").
+          sudo flatpak install -y --noninteractive flathub \
+            org.gnome.Platform//48 org.gnome.Sdk//48
 
       - name: Build Flatpak
         uses: flatpak/flatpak-github-actions/flatpak-builder@v6
