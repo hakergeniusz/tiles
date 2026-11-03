@@ -55,8 +55,8 @@ jobs:
           # deps into the system installation without root, which polkit
           # denies on CI runners ("Deploy not allowed for user").
           sudo flatpak install -y --noninteractive flathub \
-            org.gnome.Platform//48 org.gnome.Sdk//48 \
-            org.freedesktop.Sdk.Extension.rust-stable//24.08
+            org.gnome.Platform//50 org.gnome.Sdk//50 \
+            org.freedesktop.Sdk.Extension.rust-stable//25.08
 
       - name: Build Flatpak
         uses: flatpak/flatpak-github-actions/flatpak-builder@v6
